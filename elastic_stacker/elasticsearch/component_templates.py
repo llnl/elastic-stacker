@@ -16,12 +16,11 @@ class ComponentTemplateController(ElasticsearchAPIController):
 
     _base_endpoint = "_component_template"
     _resource_directory = "component_templates"
+    _excluded_attributes = ["component_template.modified_date_millis"]
 
     def _build_endpoint(self, name: str) -> str:
         endpoint = (
-            self._base_endpoint
-            if name is None
-            else f"{self._base_endpoint}/{name}"
+            self._base_endpoint if name is None else f"{self._base_endpoint}/{name}"
         )
         return endpoint
 
