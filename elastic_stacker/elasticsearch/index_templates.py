@@ -17,12 +17,16 @@ class IndexTemplateController(ElasticsearchAPIController):
 
     _base_endpoint = "_index_template"
     _resource_directory = "index_templates"
+    _excluded_attributes = [
+        "index_template.created_date",
+        "index_template.created_date_millis",
+        "index_template.modified_date",
+        "index_template.modified_date_millis",
+    ]
 
     def _build_endpoint(self, name: str) -> str:
         endpoint = (
-            self._base_endpoint
-            if name is None
-            else f"{self._base_endpoint}/{name}"
+            self._base_endpoint if name is None else f"{self._base_endpoint}/{name}"
         )
         return endpoint
 

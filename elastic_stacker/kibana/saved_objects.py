@@ -30,16 +30,6 @@ class SavedObjectController(GenericController):
         "version",
     }
 
-    def types(self):
-        """
-        Returns the types of saved objects the current user has the ability to export.
-        This isn't in the docs (it's only used internally by Kibana) so it might break without warning.
-        """
-        response = self._client.get(
-            "/api/kibana/management/saved_objects/_allowed_types"
-        )
-        return response.json()
-
     # TODO: this should return a prepared request.
     def _raw_export_objects(
         self,
@@ -51,7 +41,9 @@ class SavedObjectController(GenericController):
         stream: bool = False,
     ):
         if not types or objects:
-            raise RuntimeError("You must specify either a list of types or objects to export in the request body.")
+            raise RuntimeError(
+                "You must specify either a list of types or objects to export in the request body."
+            )
 
         if space_id is not None:
             endpoint = "/s/%s/api/saved_objects/_export" % space_id
@@ -263,12 +255,9 @@ class SavedObjectController(GenericController):
         export across many separate files so they can be managed individually
         by e.g. version-control.
         """
-        known_types = {t["name"] for t in self.types()["types"]}
 
-        types = set(types) if types else known_types
-
-        invalid_types = types.difference(known_types)
-        assert not invalid_types, f"Invalid types: {invalid_types}. Valid types include: {known_types}"
+        if not types:
+            types = {"*"}
 
         working_directory = self._get_working_dir(data_directory, create=True)
 
